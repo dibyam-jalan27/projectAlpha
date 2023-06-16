@@ -28,6 +28,20 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  problemsSolved: {
+    hard:{
+      type: Number,
+      default: 0,
+    },
+    medium:{
+      type: Number,
+      default: 0,
+    },
+    easy:{
+      type: Number,
+      default: 0,
+    },
+  },
 });
 
 userSchema.pre("save", async function (next) {
