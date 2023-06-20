@@ -10,7 +10,7 @@ const router = express.Router();
 const { authorizeRoles, isAuthenticatedUser } = require("../middleware/auth");
 
 //routes
-router.route("/problems").post(getProblems);
+router.route("/problems").get(getProblems);
 router
   .route("/admin/problem/:id")
   .put(isAuthenticatedUser, authorizeRoles("admin"), updateProblem)

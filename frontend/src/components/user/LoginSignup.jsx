@@ -2,39 +2,53 @@ import React, { Fragment, useRef, useState, useEffect } from "react";
 import "./LoginSignUp.css";
 import Loader from "../layout/Loader/Loader";
 import { Link } from "react-router-dom";
-import MdMailOutlineIcon from "@material-ui/icons/MailOutline";
-import LockOpenIcon from "@material-ui/icons/LockOpen";
-import FaceIcon from "@material-ui/icons/Face";
-import { useNavigate, useLocation } from "react-router-dom";
+import {AiOutlineUnlock,AiOutlineMail} from "react-icons/ai";
+import {BiFace} from "react-icons/bi";
+import { useDispatch, useSelector } from "react-redux";
+import { login, register,clearErrors } from "../../action/userAction";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const LoginSignUp = () => {
-
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const loginTab = useRef(null);
   const registerTab = useRef(null);
   const switcherTab = useRef(null);
 
+  const { isAuthenticated, error, loading } = useSelector(
+    (state) => state.user
+  );
+
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [user, setUser] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [name,setName] = useState("")
+  const [email,setEmail] = useState("")
+  const [password,setPassword] = useState("")
 
-  const { name, email, password } = user;
-    const loading = false;
   const loginSubmit = (e) => {
     e.preventDefault();
+    dispatch(login(loginEmail, loginPassword));
 };
 
   const registerSubmit = (e) => {
     e.preventDefault();
+    dispatch(register(name,email,password));
   };
 
-  const registerDataChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
-  };
   
+  useEffect(() => {
+    if(error){
+      toast.error(error);
+      dispatch(clearErrors());
+    }
+
+    if (isAuthenticated) {
+      navigate("/problems");
+    }
+  }, [dispatch, error, isAuthenticated, navigate]);
+
+
   const switchTabs = (e, tab) => {
     if (tab === "login") {
       switcherTab.current.classList.add("shiftToNeutral");
@@ -69,7 +83,7 @@ const LoginSignUp = () => {
               </div>
               <form className="loginForm" ref={loginTab} onSubmit={loginSubmit}>
                 <div className="loginEmail">
-                  <MdMailOutlineIcon />
+                  <AiOutlineMail/>
                   <input
                     type="email"
                     placeholder="Email"
@@ -79,7 +93,7 @@ const LoginSignUp = () => {
                   />
                 </div>
                 <div className="loginPassword">
-                  <LockOpenIcon />
+                  <AiOutlineUnlock/>
                   <input
                     type="password"
                     placeholder="Password"
@@ -98,36 +112,36 @@ const LoginSignUp = () => {
                 onSubmit={registerSubmit}
               >
                 <div className="signUpName">
-                  <FaceIcon />
+                  <BiFace/>
                   <input
                     type="text"
                     placeholder="Name"
                     required
                     name="name"
                     value={name}
-                    onChange={registerDataChange}
+                    onChange={(e) =>setName(e.target.value)}
                   />
                 </div>
                 <div className="signUpEmail">
-                  <MdMailOutlineIcon />
+                  <AiOutlineMail/>
                   <input
                     type="email"
                     placeholder="Email"
                     required
                     name="email"
                     value={email}
-                    onChange={registerDataChange}
+                    onChange={(e) =>setEmail(e.target.value)}
                   />
                 </div>
                 <div className="signUpPassword">
-                  <LockOpenIcon />
+                  <AiOutlineUnlock/>
                   <input
                     type="password"
                     placeholder="Password"
                     required
                     name="password"
                     value={password}
-                    onChange={registerDataChange}
+                    onChange={(e) =>setPassword(e.target.value)}
                   />
                 </div>
                 <input type="submit" value="Register" className="signUpBtn" />
