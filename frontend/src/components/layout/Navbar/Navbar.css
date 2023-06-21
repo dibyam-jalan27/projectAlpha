@@ -1,0 +1,41 @@
+*{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    font-family: sans-serif;
+}
+
+nav{
+    background: #222;
+    padding: 5px 20px;
+}
+
+ul{
+    list-style: none;
+}
+
+a{
+    color:white;
+    text-decoration: none;
+}
+
+a:hover{
+    color: #ccc;
+}
+
+.menu{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logoutBtn{
+    width: 50px;
+    height: 50px;
+}
+.logo{
+    padding-right: 1200px;
+}

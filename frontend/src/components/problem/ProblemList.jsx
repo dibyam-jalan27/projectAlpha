@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from "react-hot-toast";
 import { clearErrors, getProblems } from '../../action/problemAction';
 import {Link} from 'react-router-dom'
+import Navbar from '../layout/Navbar/Navbar';
 
 const ProblemList = () => {
   const dispatch = useDispatch();
@@ -54,6 +55,7 @@ const ProblemList = () => {
     )
   return (
     <Fragment>
+      <Navbar/>
         <div className='problemListContainer'>
             <DataGrid
                 rows={rows}

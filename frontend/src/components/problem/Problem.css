@@ -1,0 +1,126 @@
+.container{
+    display: flex;
+}
+
+
+.Header{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+.Header body{
+    font-family: sans-serif;
+}
+
+.Header nav{
+    background: #222;
+    padding: 5px 20px;
+    height: 100px;
+}
+
+.Header ul{
+    padding-top: 25px;
+    list-style: none;
+    font-size: 35px;
+}
+
+.Menu{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.Menu li h1{
+    color : white;
+}
+
+.problemContainer{
+    width: 50%;
+    height: 100%;
+    padding: 10px;
+}
+
+.problemContainer h1{
+    font-size: 33px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.inputFormat{
+    margin-top: 20px;
+}
+.inputFormat h2{
+    font-size: 25px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.outputFormat{
+    margin-top: 20px;
+}
+.outputFormat h2{
+    font-size: 25px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding: 0;
+}
+
+.table{
+    border-collapse: collapse;
+    width: 100%;
+    padding: 20px;
+    justify-content: center;
+}
+
+.table td{
+    padding: 20px;
+}
+
+.header {
+    background: #57a958;
+    text-align: left;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    padding: 4px;
+    font-family: sans-serif;
+}
+
+.control-panel {
+    background: lightgray;
+    text-align: right;
+    padding: 4px;
+    font-family: sans-serif;
+}
+
+.languages {
+    margin-left: 545px;
+    background: white;
+    border: 1px solid gray;
+}
+
+#editor { height: 400px; }
+
+.button-container {
+    text-align: right;
+    padding: 4px;
+}
+
+.btn {
+    background: #57a958;
+    color: white;
+    padding: 8px;
+    border: 0;
+}
+
+.output {
+        padding: 4px;
+        border: 2px solid gray;
+        min-height: 100px;
+        width: auto;
+        resize: none;
+
+}
