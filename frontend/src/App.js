@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import store from './store';
 import { loadUser } from './action/userAction.js';
 import Problem from './components/problem/Problem.jsx';
+import CreateProblem from './components/problem/CreateProblem';
 
 function App() {
   const {isAuthenticated, user} = useSelector(state => state.user);
@@ -18,6 +19,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path='/create' element={<CreateProblem/>}/>
         <Route path="/problems" element={<ProblemList/>}/>
         <Route path="/login" element={<LoginSignup/>} />
         <Route path="/problem/:id" element={<Problem/>}/>

@@ -1,5 +1,6 @@
 .container{
     display: flex;
+    width: 1600px;
 }
 
 
@@ -36,7 +37,7 @@
 }
 
 .problemContainer{
-    width: 50%;
+    width: 800px;
     height: 100%;
     padding: 10px;
 }
@@ -79,48 +80,55 @@
     padding: 20px;
 }
 
-.header {
-    background: #57a958;
-    text-align: left;
+.ide{
+    width: 800px;
+}
+.language{
+    display: flex;
+    width: 100%;
+}
+
+.language h3{
     font-size: 20px;
-    font-weight: bold;
-    color: white;
-    padding: 4px;
-    font-family: sans-serif;
 }
 
-.control-panel {
-    background: lightgray;
-    text-align: right;
-    padding: 4px;
-    font-family: sans-serif;
+.language select{
+    margin-left: 400px;
 }
 
-.languages {
-    margin-left: 545px;
-    background: white;
-    border: 1px solid gray;
+.customInput h4{
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
 }
 
-#editor { height: 400px; }
-
-.button-container {
-    text-align: right;
-    padding: 4px;
+.customInput{
+    z-index: -1;
+}
+textarea{
+    z-index: -100px;
+    padding: 0;
+    margin: 0;
+}
+.wrapper{
+    position: relative;
+}
+.buttons{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-top: 10px;
 }
 
-.btn {
-    background: #57a958;
-    color: white;
-    padding: 8px;
-    border: 0;
+.btn-run{
+    padding: 0 10px ;
+    margin-right: 20px;
+    background-color: blue;
+    color: aliceblue;
 }
 
-.output {
-        padding: 4px;
-        border: 2px solid gray;
-        min-height: 100px;
-        width: auto;
-        resize: none;
-
+.btn-submit{
+    padding: 0 10px ;
+    background-color: greenyellow;
+    color: black;
 }

@@ -11,9 +11,11 @@ app.use(bodyParser.urlencoded({extended:true}));
 //Route imports
 const userRoute = require('./Routes/userRoutes');
 const problemRoute = require('./Routes/problemRoutes');
+const submissionRoute = require('./Routes/submissionRoutes');
 
 app.use("/api/v1", userRoute);
 app.use("/api/v1", problemRoute);
+app.use("/api/v1", submissionRoute);
 
 //Error Middleware
 app.use(errrMiddleware);
