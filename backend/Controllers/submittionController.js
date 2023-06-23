@@ -56,7 +56,7 @@ catch(err){
 //Create file
 const createFile = async (format, content) => {
   const jobID = uuid();
-  const fileName = `${jobID}.${format}`;
+  const fileName = format==="java"?`Main.java`: `${jobID}.${format}`;
   const filePath = path.join(dirCodes, fileName);
   fs.writeFileSync(filePath, content);
   return filePath;
@@ -118,12 +118,11 @@ const compileCpp = async (filePath) => {
 
 //Compile Java
 const compileJava = async (filePath) => {
-  const jovID = path.basename(filePath).split(".")[0];
-  const outFilePath = path.join(outPath, `${jovID}.class`);
+  const jovID = "Main"
 
   return new Promise((resolve, reject) => {
     exec(
-      `javac ${filePath} && cd ${outPath} && java ${outFilePath}`,
+      `cd ${dirCodes} && javac ${filePath}  && java ${jovID} < Input.txt`,
       (error, stdout, stderr) => {
         if (error) {
           reject({ error, stderr });
@@ -139,10 +138,9 @@ const compileJava = async (filePath) => {
 
 //Compile Python
 const compilePython = async (filePath) => {
-  const jovID = path.basename(filePath).split(".")[0];
   return new Promise((resolve, reject) => {
     exec(
-      `python ${filePath} < Input.txt`,
+      `cd ${dirCodes} && python ${filePath} < Input.txt`,
       (error, stdout, stderr) => {
         if (error) {
           reject({ error, stderr });

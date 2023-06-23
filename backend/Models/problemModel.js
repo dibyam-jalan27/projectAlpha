@@ -39,10 +39,12 @@ const problemSchema = new mongoose.Schema({
     },
     timeLimit: {
         type: Number,
+        default: 1,
         required: [true, "Please enter Time Limit"],
     },
     memoryLimit: {
         type: Number,
+        default: 256,
         required: [true, "Please enter Memory Limit"],
     },
     tags: {

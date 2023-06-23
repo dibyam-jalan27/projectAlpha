@@ -6,6 +6,10 @@ import {
   PROBLEM_DETAILS_REQUEST,
   PROBLEM_DETAILS_SUCCESS,
   PROBLEM_DETAILS_FAIL,
+  NEW_PROBLEM_REQUEST,
+  NEW_PROBLEM_SUCCESS,
+  NEW_PROBLEM_RESET,
+  NEW_PROBLEM_FAIL,
 } from "../constants/problemConstants.js";
 
 export const problemsReducer = (state = { problems: [] }, action) => {
@@ -62,3 +66,36 @@ export const problemmDetailReducer = (state = { problem: {} }, action) => {
       return state;
   }
 };
+
+export const newProblemReducer = (state = { problem: {} }, action) => {
+  switch (action.type) {
+    case NEW_PROBLEM_REQUEST:
+      return {
+        ...state,
+        loading: true,
+      };
+    case NEW_PROBLEM_SUCCESS:
+      return {
+        loading: false,
+        success: action.payload.success,
+        problem: action.payload.problem,
+      };
+    case NEW_PROBLEM_RESET:
+      return {
+        ...state,
+        success: false,
+      };
+    case NEW_PROBLEM_FAIL:
+      return {
+        ...state,
+        error: action.payload,
+      };
+    case CLEAR_ERRORS:
+      return {
+        ...state,
+        error: null,
+      };
+    default:
+      return state;
+  }
+}

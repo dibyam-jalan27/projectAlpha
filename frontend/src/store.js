@@ -4,12 +4,13 @@ import {composeWithDevTools} from 'redux-devtools-extension';
 import{
     userReducer
 }from './reducers/userReducer.js';
-import { problemmDetailReducer, problemsReducer } from './reducers/problemReducer.js';
+import { problemmDetailReducer, problemsReducer , newProblemReducer} from './reducers/problemReducer.js';
 
 const reducer = combineReducers({
     user:userReducer,
     problems:problemsReducer,
     problemDetails:problemmDetailReducer,
+    newProblem:newProblemReducer
 });
 
 let initialState = {

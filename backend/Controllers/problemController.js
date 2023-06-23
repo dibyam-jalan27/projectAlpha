@@ -6,7 +6,7 @@ const Problem = require("../Models/problemModel");
 exports.newProblem = catchAsyncErrors(async (req, res, next) => {
   const problem = await Problem.create(req.body);
 
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     problem,
   });

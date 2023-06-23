@@ -7,6 +7,9 @@ import {
   PROBLEM_DETAILS_REQUEST,
   PROBLEM_DETAILS_SUCCESS,
   PROBLEM_DETAILS_FAIL,
+  NEW_PROBLEM_REQUEST,
+  NEW_PROBLEM_SUCCESS,
+  NEW_PROBLEM_FAIL,
 } from "../constants/problemConstants.js";
 
 // Get all problems
@@ -44,6 +47,34 @@ export const getProblemDetails = (id) => async (dispatch) => {
     });
   }
 };
+
+//New problem
+export const createProblem = (problemData) => async (dispatch) => {
+  try {
+    console.log(problemData);
+    dispatch({ type: NEW_PROBLEM_REQUEST });
+    const config = {
+      headers: {
+        "Content-Type": "Application/json",
+      },
+    };
+    const { data } = await axios.post(
+      `/api/v1/admin/problem/new`,
+      problemData,
+      config
+    );
+    dispatch({
+      type: NEW_PROBLEM_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: NEW_PROBLEM_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
 
 //Clear errors
 export const clearErrors = () => async (dispatch) => {
