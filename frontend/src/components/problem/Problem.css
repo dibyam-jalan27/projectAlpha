@@ -28,7 +28,7 @@
 
 .Menu{
     display: flex;
-    justify-content: start;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -111,11 +111,12 @@ textarea{
     margin: 0;
 }
 .wrapper{
+    padding-top: 5px;
     position: relative;
 }
 .buttons{
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
     margin-top: 10px;
 }

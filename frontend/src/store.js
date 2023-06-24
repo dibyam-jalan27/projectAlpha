@@ -5,12 +5,14 @@ import{
     userReducer
 }from './reducers/userReducer.js';
 import { problemmDetailReducer, problemsReducer , newProblemReducer} from './reducers/problemReducer.js';
+import { newTestCaseReducer } from './reducers/testCaseReducer.js';
 
 const reducer = combineReducers({
     user:userReducer,
     problems:problemsReducer,
     problemDetails:problemmDetailReducer,
-    newProblem:newProblemReducer
+    newProblem:newProblemReducer,
+    newTestCase:newTestCaseReducer,
 });
 
 let initialState = {

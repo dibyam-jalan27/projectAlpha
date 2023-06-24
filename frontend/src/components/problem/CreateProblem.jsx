@@ -1,9 +1,11 @@
 import React, { Fragment, useEffect, useState } from "react";
 import "./CreateProblem.css";
 import { useDispatch, useSelector } from "react-redux";
-import { createProblem,clearErrors } from "../../action/problemAction.js";
+import { createProblem, clearErrors } from "../../action/problemAction.js";
 import { NEW_PROBLEM_RESET } from "../../constants/problemConstants";
 import { useNavigate } from "react-router-dom";
+import { newTestCase } from "../../action/testCaseAction";
+import { NEW_TESTCASE_RESET } from "../../constants/testcaseConstants";
 
 const CreateProblem = () => {
   const navigate = useNavigate();
@@ -24,10 +26,13 @@ const CreateProblem = () => {
   const [resultCase2, setResultCase2] = useState("");
   const [resultCase3, setResultCase3] = useState("");
 
-  const { loading, error, success } = useSelector(
-    (state) => state.newProblem)
+  const { error, success, problem } = useSelector((state) => state.newProblem);
 
-  const sentProblem =  (e) => {
+  const { error: errorTest, success: successTest } = useSelector(
+    (state) => state.newTestCase
+  );
+
+  const sentProblem = (e) => {
     e.preventDefault();
     const problem = {
       name,
@@ -41,24 +46,40 @@ const CreateProblem = () => {
       difficulty,
     };
     dispatch(createProblem(problem));
+  };
+  if (success) {
+    const problemId = problem._id;
+    const testcase = {
+      problemId,
+      testCase1,
+      resultCase1,
+      testCase2,
+      resultCase2,
+      testCase3,
+      resultCase3,
+    };
+    dispatch(newTestCase(testcase));
   }
 
-    useEffect(() => {
-      if (error) {
-        clearErrors();
-      }
-      if (success) {
-        navigate("/problems");
-        dispatch({ type: NEW_PROBLEM_RESET });
-      }
-    },[dispatch, error, success,navigate]);
+  useEffect(() => {
+    if (error) {
+      clearErrors();
+    }
+    if (errorTest) {
+      clearErrors();
+    }
+    if (success) {
+      dispatch({ type: NEW_PROBLEM_RESET });
+    }
+    if (successTest) {
+      navigate("/problems");
+      dispatch({ type: NEW_TESTCASE_RESET });
+    }
+  }, [dispatch, error, success, navigate, sentProblem, errorTest,successTest]);
   return (
     <Fragment>
       <div className="newProblemContainer">
-        <form
-          className="createProblemForm"
-          onSubmit={sentProblem}
-        >
+        <form className="createProblemForm" onSubmit={sentProblem}>
           <h1>Create Problem</h1>
 
           <div>
@@ -164,84 +185,81 @@ const CreateProblem = () => {
             />
           </div>
           <div className="test-case">
-        <div className="Headings">
-          <h1>Test case 1</h1>
-        </div>
-        <div className="test-cases">
-          <textarea
-            text="text"
-            placeholder="Input"
-            required
-            cols="57"
-            rows="5"
-            value={testCase1}
-            onChange={(e) => setTestCase1(e.target.value)}
-          />
-          <textarea
-            text="text"
-            placeholder="Output"
-            required
-            cols="57"
-            rows="5"
-            value={resultCase1}
-            onChange={(e) => setResultCase1(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className="test-case">
-        <div className="Headings">
-          <h1>Test case 2</h1>
-        </div>
-        <div className="test-cases">
-          <textarea
-            text="text"
-            placeholder="Input"
-            required
-            cols="57"
-            rows="5"
-            value={testCase2}
-            onChange={(e) => setTestCase2(e.target.value)}
-          />
-          <textarea
-            text="text"
-            placeholder="Output"
-            required
-            cols="57"
-            rows="5"
-            value={resultCase2}
-            onChange={(e) => setResultCase2(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className="test-case">
-        <div className="Headings">
-          <h1>Test case3</h1>
-        </div>
-        <div className="test-cases">
-          <textarea
-            text="text"
-            placeholder="Input"
-            required
-            cols="57"
-            rows="5"
-            value={testCase3}
-            onChange={(e) => setTestCase3(e.target.value)}
-          />
-          <textarea
-            text="text"
-            placeholder="Output"
-            required
-            cols="57"
-            rows="5"
-            value={resultCase3}
-            onChange={(e) => setResultCase3(e.target.value)}
-          />
-        </div>
-      </div>
-          <button
-            id="createProblemBtn"
-            type="submit"
-          >
+            <div className="Headings">
+              <h1>Test case 1</h1>
+            </div>
+            <div className="test-cases">
+              <textarea
+                text="text"
+                placeholder="Input"
+                required
+                cols="57"
+                rows="5"
+                value={testCase1}
+                onChange={(e) => setTestCase1(e.target.value)}
+              />
+              <textarea
+                text="text"
+                placeholder="Output"
+                required
+                cols="57"
+                rows="5"
+                value={resultCase1}
+                onChange={(e) => setResultCase1(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="test-case">
+            <div className="Headings">
+              <h1>Test case 2</h1>
+            </div>
+            <div className="test-cases">
+              <textarea
+                text="text"
+                placeholder="Input"
+                required
+                cols="57"
+                rows="5"
+                value={testCase2}
+                onChange={(e) => setTestCase2(e.target.value)}
+              />
+              <textarea
+                text="text"
+                placeholder="Output"
+                required
+                cols="57"
+                rows="5"
+                value={resultCase2}
+                onChange={(e) => setResultCase2(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="test-case">
+            <div className="Headings">
+              <h1>Test case3</h1>
+            </div>
+            <div className="test-cases">
+              <textarea
+                text="text"
+                placeholder="Input"
+                required
+                cols="57"
+                rows="5"
+                value={testCase3}
+                onChange={(e) => setTestCase3(e.target.value)}
+              />
+              <textarea
+                text="text"
+                placeholder="Output"
+                required
+                cols="57"
+                rows="5"
+                value={resultCase3}
+                onChange={(e) => setResultCase3(e.target.value)}
+              />
+            </div>
+          </div>
+          <button id="createProblemBtn" type="submit">
             Create
           </button>
         </form>

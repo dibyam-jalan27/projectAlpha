@@ -8,6 +8,9 @@ import { Link } from "react-router-dom";
 import "./Problem.css";
 import Editor from "@monaco-editor/react";
 import axios from "axios";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
+import toast from "react-hot-toast";
 
 const Problem = () => {
   const dispatch = useDispatch();
@@ -15,10 +18,13 @@ const Problem = () => {
   const [language, setLanguage] = useState("c");
   const [code, setCode] = useState("");
   const [input, setInput] = useState("");
+  const [key, setKey] = useState("input");
+  const [output, setOutput] = useState("");
 
   const { loading, error, problem } = useSelector(
     (state) => state.problemDetails
   );
+
   const options = {
     autoIndent: "full",
     contextmenu: true,
@@ -42,17 +48,33 @@ const Problem = () => {
   };
 
   const runCodeFtn = async () => {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
+    
+    try {
+      const problemData = {
+        language: language,
+        code: code,
+        input: input,
+      };
+      const config = {
+        headers: {
+          "Content-Type": "Application/json",
+        },
+      };
+      const { data } = await axios.post(
+        `/api/v1/compile`,
+        problemData,
+        config
+      );
+      console.log(data);
+      if(data.success===false){
+        toast.error("Compilation Error");
+        return;
+      }
+      setOutput(data.result);
+      setKey("output");
+    } catch (error) {
+      toast.error(error.response.data.message);
     };
-    const { data } = await axios.post(
-      "/api/v1/compile",
-      { code, language, input },
-      config
-    );
-    console.log(data);
   };
   const submitCode = () => {};
 
@@ -61,7 +83,7 @@ const Problem = () => {
       clearErrors();
     }
     dispatch(getProblemDetails(id));
-  }, []);
+  }, [dispatch, error, id]);
   return (
     <Fragment>
       {loading ? (
@@ -145,15 +167,23 @@ const Problem = () => {
                 onChange={(e) => setCode(e)}
               />
               <div className="wrapper">
-                <div className="customInput">
-                  <h4>Custom input</h4>
-                  <textarea
-                    rows="4"
-                    cols="70"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                  ></textarea>
-                </div>
+                <Tabs
+                  activeKey={key}
+                  onSelect={(k) => setKey(k)}
+                  className="mb-3"
+                >
+                  <Tab eventKey="input" title="Input">
+                    <textarea
+                      rows="4"
+                      cols="70"
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                    />
+                  </Tab>
+                  <Tab eventKey="output" title="Output">
+                    <textarea rows="4" cols="70" value={output} readOnly />
+                  </Tab>
+                </Tabs>
                 <div className="buttons">
                   <button className="btn-run" onClick={runCodeFtn}>
                     Run

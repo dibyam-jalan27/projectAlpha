@@ -5,10 +5,12 @@ const Problem = require("../Models/problemModel");
 // Create new problem => /api/v1/admin/problem/new
 exports.newProblem = catchAsyncErrors(async (req, res, next) => {
   const problem = await Problem.create(req.body);
+  const id = problem._id;
 
   res.status(200).json({
     success: true,
     problem,
+    id
   });
 });
 
