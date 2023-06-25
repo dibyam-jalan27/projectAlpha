@@ -222,7 +222,7 @@ exports.submitCode = catchAsyncErrors(async (req, res, next) => {
 //Create file
 const createFile = async (format, content) => {
   const jobID = uuid();
-  const fileName = format === "java" ? `Main.java` : `${jobID}.${format}`;
+  const fileName = `${jobID}.${format}`;
   const filePath = path.join(dirCodes, fileName);
   fs.writeFileSync(filePath, content);
   return filePath;
@@ -284,11 +284,11 @@ const compileCpp = async (filePath) => {
 
 //Compile Java
 const compileJava = async (filePath) => {
-  const jovID = "Main";
+  const jovID = path.basename(filePath).split(".")[0];
 
   return new Promise((resolve, reject) => {
     exec(
-      `cd ${dirCodes} && javac Main.java  && java ${jovID} < Input.txt`,
+      `cd ${dirCodes} && java ${jovID}.java < Input.txt`,
       (error, stdout, stderr) => {
         if (error) {
           reject({ error, stderr });
