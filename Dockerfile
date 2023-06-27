@@ -8,7 +8,7 @@ RUN apk add --update build-base
 RUN apk add --update python3
 
 # install java
-RUN apk add --update openjdk20
+RUN apk add --update openjdk11
 
 COPY package*.json ./
 RUN npm install 
@@ -16,5 +16,5 @@ COPY . .
 
 EXPOSE 4000
 
-CMD ["npx", "run", "dev"];
+CMD ["npm", "run", "dev"];
 # CMD ["npm", "start"]

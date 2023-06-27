@@ -1,8 +1,8 @@
 const express = require('express')
-const { compileCode, submitCode } = require('../Controllers/submittionController')
+const { runCode, submitCode } = require('../Controllers/submittionController')
 const router = express.Router()
 
-router.route('/compile').post(compileCode);
+router.route('/run').post(runCode);
 router.route('/submit').post(submitCode);
 
 module.exports = router;

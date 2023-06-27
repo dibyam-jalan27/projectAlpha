@@ -1,0 +1,6 @@
+frontend
+.git
+node_modules
+.gitignore
+Dockerfile
+.dockerignore

@@ -47,11 +47,6 @@ const problemSchema = new mongoose.Schema({
         default: 256,
         required: [true, "Please enter Memory Limit"],
     },
-    tags: {
-        type: [String],
-        required: [true, "Please enter Tags"],
-    },
-
 });
 
 module.exports = mongoose.model("Problem", problemSchema);

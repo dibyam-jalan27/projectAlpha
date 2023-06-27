@@ -48,7 +48,6 @@ const Problem = () => {
   };
 
   const runCodeFtn = async () => {
-    
     try {
       const problemData = {
         language: language,
@@ -60,13 +59,8 @@ const Problem = () => {
           "Content-Type": "Application/json",
         },
       };
-      const { data } = await axios.post(
-        `/api/v1/compile`,
-        problemData,
-        config
-      );
-      console.log(data);
-      if(data.success===false){
+      const { data } = await axios.post(`/api/v1/run`, problemData, config);
+      if (data.success === false) {
         toast.error("Compilation Error");
         return;
       }
@@ -74,9 +68,28 @@ const Problem = () => {
       setKey("output");
     } catch (error) {
       toast.error(error.response.data.message);
-    };
+    }
   };
-  const submitCode = () => {};
+  const submitCode = async() => {
+    const problemData = {
+      language: language,
+      code: code,
+      problemId: id,
+    };
+    const config = {
+      headers: {
+        "Content-Type": "Application/json",
+      },
+    };
+    const { data } = await axios.post(`/api/v1/submit`, problemData, config);
+    if(data.success === false){
+      toast.error(data.result);
+    }
+    else{
+      toast.success(data.result);
+    }
+    console.log(data);
+  };
 
   useEffect(() => {
     if (error) {

@@ -19,6 +19,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<ProblemList/>}/>
         <Route path="/admin/createProblem" element={<ProtectedRoute isAdmin={true} />}>
           <Route index element={<CreateProblem/>} />
         </Route>
