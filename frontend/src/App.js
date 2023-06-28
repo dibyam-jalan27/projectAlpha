@@ -10,6 +10,7 @@ import Problem from './components/problem/Problem.jsx';
 import CreateProblem from './components/problem/CreateProblem';
 import ProtectedRoute from './components/routes/ProtectedRoutes';
 import ForgotPassword from './components/user/ForgotPassword.jsx';
+import AddProblem from './components/problem/AddProblem';
 
 function App() {
 
@@ -19,7 +20,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<ProblemList/>}/>
+        <Route path="/" element={<AddProblem/>}/>
         <Route path="/admin/createProblem" element={<ProtectedRoute isAdmin={true} />}>
           <Route index element={<CreateProblem/>} />
         </Route>

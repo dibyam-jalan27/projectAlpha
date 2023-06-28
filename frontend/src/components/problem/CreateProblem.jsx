@@ -75,7 +75,7 @@ const CreateProblem = () => {
       navigate("/problems");
       dispatch({ type: NEW_TESTCASE_RESET });
     }
-  }, [dispatch, error, success, navigate, sentProblem, errorTest,successTest]);
+  }, [dispatch, error, success, navigate, errorTest,successTest]);
   return (
     <Fragment>
       <div className="newProblemContainer">

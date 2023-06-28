@@ -82,8 +82,10 @@ exports.runCode = catchAsyncErrors(async (req, res, next) => {
     const filePath = await createFile(language, code);
     const result = await compileAndExecute(language, filePath, input);
     res.json({ success: true, result });
+    console.log({ success: true, result });
   } catch (err) {
     res.json({ success: false, data: err });
+    console.log({ success: false, data: err });
   }
 });
 

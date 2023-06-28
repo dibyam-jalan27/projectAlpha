@@ -9,34 +9,26 @@ const problemSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please enter Problem Statement"],
     },
-    inputFormat: {
-        type: String,
-        required: [true, "Please enter Input Format"],
+    countAC: {
+        type: Number,
+        default: 0,
     },
-    outputFormat: {
-        type: String,
-        required: [true, "Please enter Output Format"],
+    countTotal: {
+        type: Number,
+        default: 0,
     },
-    constraints: {
-        type: String,
-        required: [true, "Please enter Constraints"],
-    },
-    sampleInput: {
-        type: String,
-        required: [true, "Please enter Sample Input"],
-    },
-    sampleOutput: {
-        type: String,
-        required: [true, "Please enter Sample Output"],
-    },
-    explanation: {
-        type: String,
-        required: [true, "Please enter Explanation"],
-    },
-    difficulty: {
-        type: String,
-        required: [true, "Please enter Difficulty"],
-    },
+    sampleTestcases:[
+        {
+            input :{
+                type: String,
+                required: true,
+            },
+            output:{
+                type: String,
+                required: true,
+            }
+        }
+    ],
     timeLimit: {
         type: Number,
         default: 1,
@@ -46,6 +38,16 @@ const problemSchema = new mongoose.Schema({
         type: Number,
         default: 256,
         required: [true, "Please enter Memory Limit"],
+    },
+    tags:[
+        {
+            type: String,
+            required: true,
+        }
+    ],
+    explanation:{
+        type: String,
+        required: true,
     },
 });
 
