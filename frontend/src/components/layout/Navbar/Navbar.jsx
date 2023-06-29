@@ -1,69 +1,112 @@
-import React, { Fragment } from "react";
-import Logo from "../../../Assets/Logo.jpg";
-import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Button, Menu, MenuItem } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../../action/userAction";
-import { AiOutlinePoweroff } from "react-icons/ai";
-import "./Navbar.css";
+import "./navbar.css";
 import Loader from "../Loader/Loader";
-import { useDispatch } from "react-redux";
-import {CgProfile} from 'react-icons/cg'
-import { toast } from "react-hot-toast";
-import { Button } from "@mui/material";
 
-const Navbar = () => {
-  const navigate = useNavigate();
+export default function NavBar() {
   const dispatch = useDispatch();
-  const { user, isAuthenticated, loading } = useSelector((state) => state.user);
-  
-  const runLogout = () => {
-    dispatch(logout());
-    toast.success("Logged Out Successfully");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { loading, isAuthenticated } = useSelector((state) => state.user);
+  const options = ["", "View Profile", "Logout"];
+  const [login, setLogin] = useState(isAuthenticated);
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const runLogin = () => {
-    navigate("/login");
-  }
-  
-  
-  return (
-    <Fragment>
-      {loading ? (
-        <Loader />
-      ) : (
-        <Fragment>
-          <nav>
-            <ul className="menu">
-              <li className="logo">
-                <Link to="/">
-                <img src={Logo} alt="Logo" />
-                </Link>
-              </li>
-              <li>
-              {(isAuthenticated && user.role === "admin") && (
-                <Link to="/admin/createProblem" className="createProblem">
-                  Create
-                </Link>
-              )}
-              </li>
-              <li>    
-              {isAuthenticated? (
-                <Button onClick={runLogout} variant="text">
-                    <AiOutlinePoweroff className="logoutBtn"/>
-                </Button>
-              ):(
-                <Button onClick={runLogin} variant="text">
-                    <CgProfile className="logoutBtn"/>
-                </Button>
-              )
-              }
-              </li>
-            </ul>
-          </nav>
-        </Fragment>
-      )}
-    </Fragment>
-  );
-};
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    setAnchorEl(null);
+    if (options[index] === "View Profile") window.location = "/dashboard";
+    else {
+      dispatch(logout());
+      setLogin(false);
+      window.location = "/";
+    }
+  };
 
-export default Navbar;
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  useEffect(() => {
+    setLogin(isAuthenticated);
+    }, [isAuthenticated]);
+
+  return (
+    (loading)?(
+        <Loader/>
+    ):(
+    <div className="navbar">
+      <div className="navbarWrapper">
+        <div className="navLeft">
+          <Link to="/" className="logo">
+            OJ
+          </Link>
+          <div className="navbarList">
+            <Link to="/problems" className="navbarItem">
+              Problemset
+            </Link>
+            {login ? (
+              <>
+                <Link to="/admin/createProblem" className="navbarItem">
+                  Add Problem
+                </Link>
+              </>
+            ) : null}
+          </div>
+        </div>
+        <div className="navRight">
+          {login ? (
+            <>
+              <Button
+                aria-controls="simple-menu"
+                aria-haspopup="true"
+                onClick={handleClickListItem}
+              >
+                <img
+                  src="https://images.unsplash.com/photo-1513789181297-6f2ec112c0bc?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8aGFja2VyfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                  alt="avatar"
+                  className="navbarAvatar"
+                />
+              </Button>
+              <Menu
+                id="simple-menu"
+                keepMounted
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                {options.map((option, index) => (
+                  <MenuItem
+                    key={option}
+                    disabled={index === 0}
+                    selected={index === selectedIndex}
+                    onClick={(event) => handleMenuItemClick(event, index)}
+                  >
+                    {option}
+                  </MenuItem>
+                ))}
+              </Menu>
+            </>
+          ) : (
+            <Link to="/login" style={{ textDecoration: "none" }}>
+              <Button
+                type="submit"
+                color="primary"
+                variant="contained"
+                className="signin-btn"
+                fullWidth
+              >
+                Sign In
+              </Button>
+            </Link>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+  )
+}

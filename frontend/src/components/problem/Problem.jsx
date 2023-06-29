@@ -1,216 +1,221 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { clearErrors, getProblemDetails } from "../../action/problemAction.js";
-import Loader from "../layout/Loader/Loader.jsx";
-import { AiOutlineArrowLeft } from "react-icons/ai";
-import { Link } from "react-router-dom";
-import "./Problem.css";
-import Editor from "@monaco-editor/react";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-import Tab from "react-bootstrap/Tab";
-import Tabs from "react-bootstrap/Tabs";
-import toast from "react-hot-toast";
+import { BeatLoader } from "react-spinners";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCode } from "@fortawesome/free-solid-svg-icons";
+import { Chip } from "@mui/material";
+import "./Problem.css";
+import CodeEditor from "../Code/CodeEditor";
+import ResultTable from "../ResultTable/ResultTable";
 
 const Problem = () => {
-  const dispatch = useDispatch();
   const { id } = useParams();
-  const [language, setLanguage] = useState("c");
+  const navigate = useNavigate();
+  const resultRef = useRef(null);
+  const [loading, setLoading] = useState(true);
+  const [problemDoesNotExists, setProblemDoesNotExists] = useState(false);
+  const [problem, setProblem] = useState({});
+  const [language, setLanguage] = useState("C++");
+  const [darkMode, setDarkMode] = useState(false);
   const [code, setCode] = useState("");
-  const [input, setInput] = useState("");
-  const [key, setKey] = useState("input");
-  const [output, setOutput] = useState("");
+  const [results, setResults] = useState([]);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [viewResult, setViewResult] = useState(false);
 
-  const { loading, error, problem } = useSelector(
-    (state) => state.problemDetails
-  );
-
-  const options = {
-    autoIndent: "full",
-    contextmenu: true,
-    fontFamily: "monospace",
-    fontSize: 13,
-    lineHeight: 24,
-    hideCursorInOverviewRuler: true,
-    matchBrackets: "always",
-    minimap: {
-      enabled: true,
-    },
-    scrollbar: {
-      horizontalSliderSize: 4,
-      verticalSliderSize: 18,
-    },
-    selectOnLineNumbers: true,
-    roundedSelection: false,
-    readOnly: false,
-    cursorStyle: "line",
-    automaticLayout: true,
-  };
-
-  const runCodeFtn = async () => {
-    try {
-      const problemData = {
-        language: language,
-        code: code,
-        input: input,
-      };
-      const config = {
-        headers: {
-          "Content-Type": "Application/json",
-        },
-      };
-      const { data } = await axios.post(`/api/v1/run`, problemData, config);
-      if (data.success === false) {
-        toast.error("Compilation Error");
-        return;
-      }
-      setOutput(data.result);
-      setKey("output");
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
-  const submitCode = async() => {
-    const problemData = {
-      language: language,
-      code: code,
-      problemId: id,
-    };
-    const config = {
-      headers: {
-        "Content-Type": "Application/json",
-      },
-    };
-    const { data } = await axios.post(`/api/v1/submit`, problemData, config);
-    if(data.success === false){
-      toast.error(data.result);
-    }
-    else{
-      toast.success(data.result);
-    }
-    console.log(data);
+  const languageExtention = {
+    C: "c",
+    "C++": "cpp",
+    Java: "java",
+    Python: "py",
   };
 
   useEffect(() => {
-    if (error) {
-      clearErrors();
-    }
-    dispatch(getProblemDetails(id));
-  }, [dispatch, error, id]);
-  return (
-    <Fragment>
-      {loading ? (
-        <Loader />
-      ) : (
-        <Fragment>
-          <div className="Header">
-            <nav>
-              <ul className="Menu">
-                <li>
-                  <Link to={"/problems"}>
-                    <AiOutlineArrowLeft />
-                  </Link>
-                </li>
-                <li>
-                  <h1>{problem.name}</h1>
-                </li>
-              </ul>
-            </nav>
+    axios
+      .get(`/api/v1/problem/${id}`)
+      .then((res) => {
+        console.log(res.data);
+        if (!res.data || res.data.length === 0) setProblemDoesNotExists(true);
+        else {
+          setProblem(res.data.problem);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setLoading(false);
+        setProblemDoesNotExists(true);
+        const error = err.response ? err.response.data.message : err.message;
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+
+    return () => {};
+  }, [id]);
+
+  const handleLanguageSelect = (e) => {
+    e.preventDefault();
+    setLanguage(e.target.value);
+  };
+
+  const handleModeChange = (themeMode) => {
+    setDarkMode(themeMode);
+  };
+
+  const onCodeChange = (newValue) => {
+    setCode(newValue);
+  };
+
+  const submit = (e) => {
+    setViewResult(true);
+    e.preventDefault();
+    setSubmitLoading(true);
+    const submitDetails = {
+      problemId: problem._id,
+      language: languageExtention[language],
+      code: code,
+    };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    axios
+      .post(`/api/v1/submit`, submitDetails, config)
+      .then((res) => {
+        setSubmitLoading(false);
+        resultRef.current.scrollIntoView({ behavior: "smooth" });
+
+        setResults(res.data.result);
+
+        if (resultRef.current) {
+          resultRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "start",
+          });
+        }
+      })
+      .catch((err) => {
+        setSubmitLoading(false);
+        const error = err.response ? err.response.data.message : err.message;
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+  };
+
+  return problemDoesNotExists ? (
+    <>{navigate("/404")}</>
+  ) : loading ? (
+    <div className="problem-loading-spinner">
+      <BeatLoader color={"#343a40"} size={30} loading={loading} />
+    </div>
+  ) : (
+    <div>
+      <div className="problem-container">
+        <ToastContainer />
+        <div className="problem-title-wrapper">
+          <div className="problem-title">
+            <FontAwesomeIcon
+              title="Happy Coding!"
+              className="problem-code-icon"
+              icon={faCode}
+            />
+            {problem.name}
           </div>
-          <div className="container">
-            <div className="problemContainer">
-              <h1>Problem</h1>
-              <div className="description">
-                <p>{problem.problemStatement}</p>
-              </div>
-              <div className="inputFormat">
-                <h2>Input Format</h2>
-                <p>{problem.inputFormat}</p>
-              </div>
-              <div className="outputFormat">
-                <h2>Output Format</h2>
-                <p>{problem.outputFormat}</p>
-              </div>
-              <div className="inputFormat">
-                <h2>Constraints</h2>
-                <p>{problem.constraints}</p>
-              </div>
-              <div className="inputFormat">
-                <h2>Sample Input</h2>
-                <table border="1" className="table">
-                  <thead>
-                    <tr>
-                      <th>Input</th>
-                      <th>Output</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{problem.sampleInput}</td>
-                      <td>{problem.sampleOutput}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <div className="inputFormat">
-                <h2>Explanation</h2>
-                <p>{problem.explanation}</p>
-              </div>
-            </div>
-            <div className="Ide">
-              <div className="inputFormat">
-                <h2>Editor</h2>
-              </div>
-              <div className="language">
-                <h3>Language</h3>
-                <select onChange={(e) => setLanguage(e.target.value)}>
-                  <option value="c">C</option>
-                  <option value="cpp">C++</option>
-                  <option value="java">Java</option>
-                  <option value="py">Python</option>
-                </select>
-              </div>
-              <Editor
-                height="400px"
-                width="570px"
-                options={options}
-                theme="vs-dark"
-                language={language === "py" ? "python" : language}
-                value={code}
-                onChange={(e) => setCode(e)}
+          <div className="problem-details">
+            <div className="problem-details-item">
+              <Chip
+                label={"Time: " + problem.timeLimit + "s"}
+                variant="outlined"
+                color="primary"
+                style={{ fontWeight: "600", fontSize: "medium" }}
               />
-              <div className="wrapper">
-                <Tabs
-                  activeKey={key}
-                  onSelect={(k) => setKey(k)}
-                  className="mb-3"
-                >
-                  <Tab eventKey="input" title="Input">
-                    <textarea
-                      rows="4"
-                      cols="70"
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                    />
-                  </Tab>
-                  <Tab eventKey="output" title="Output">
-                    <textarea rows="4" cols="70" value={output} readOnly />
-                  </Tab>
-                </Tabs>
-                <div className="buttons">
-                  <button className="btn-run" onClick={runCodeFtn}>
-                    Run
-                  </button>
-                  <button className="btn-submit" onClick={submitCode}>
-                    Submit
-                  </button>
+            </div>
+            <div className="problem-details-item">
+              <Chip
+                label={"Memory: " + problem.memoryLimit + "MB"}
+                variant="outlined"
+                color="primary"
+                style={{ fontWeight: "600", fontSize: "medium" }}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="problem-statement-wrapper">
+          <div
+            className="problem-statement"
+            dangerouslySetInnerHTML={{
+              __html: problem.problemStatement
+                ? problem.problemStatement.replace(/<br>/g, " ")
+                : null,
+            }}
+          />
+        </div>
+        <div className="problem-sample-test-wrapper">
+          {problem.sampleTestcases &&
+            problem.sampleTestcases.map((testcase, index) => (
+              <div className="problem-sample-test" key={index}>
+                <div className="problem-sample-test-input">
+                  <span className="problem-sample-test-input-title">
+                    Sample Input {index + 1}
+                  </span>
+                  <pre className="problem-sample-test-input-content">
+                    {testcase.input}
+                  </pre>
+                </div>
+                <div className="problem-sample-test-output">
+                  <span className="problem-sample-test-output-title">
+                    Sample Output {index + 1}
+                  </span>
+                  <pre className="problem-sample-test-output-content">
+                    {testcase.output}
+                  </pre>
                 </div>
               </div>
+            ))}
+          {problem.explanation ? (
+            <div className="problem-sample-test-explanation">
+              <span className="problem-sample-test-explanation-title">
+                Explanation :{" "}
+              </span>
+              <div className="problem-sample-test-explanation-content">
+                {problem.explanation}
+              </div>
             </div>
-          </div>
-        </Fragment>
-      )}
-    </Fragment>
+          ) : null}
+        </div>
+      </div>
+      <CodeEditor
+        language={language}
+        handleLanguageSelect={handleLanguageSelect}
+        darkMode={darkMode}
+        handleModeChange={handleModeChange}
+        onCodeChange={onCodeChange}
+        submit={submit}
+        submitLoading={submitLoading}
+      />
+      {viewResult && (
+      <ResultTable results={results} resultRef={resultRef} />)}
+      <br />
+      <br />
+    </div>
   );
 };
 

@@ -1,0 +1,46 @@
+.problemset-container{
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.problemset-left{
+    flex: 1;
+}
+
+.problemset-right{
+    margin: 0px 50px 0px 50px;
+    flex: 4;
+}
+.logoutBtn{
+    width: 50px;
+    height: 50px;
+}
+.problem-searchbar{
+    margin-bottom: 10px;
+}
+
+.problemset-add{
+    margin-top:5px;
+    margin-right:5px;
+    margin-bottom:auto;
+    text-align:end;
+}
+
+.problemset-spinner{
+    display: block;
+    position: fixed;
+    z-index: 2; 
+    top: 50%;
+    right: 50%;
+}
+
+.paperClass{
+    width: "100%";
+    height: "100%";
+}
+
+.containerClass{
+    max-height: 950;
+}

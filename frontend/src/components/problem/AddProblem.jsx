@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { createProblem, clearErrors } from "../../action/problemAction.js";
-import { NEW_PROBLEM_RESET } from "../../constants/problemConstants";
 import { useNavigate } from "react-router-dom";
-import { newTestCase } from "../../action/testCaseAction";
-import { NEW_TESTCASE_RESET } from "../../constants/testcaseConstants";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import axios from "axios";
 import {
   Button as ReactButton,
   Form,
@@ -120,14 +116,8 @@ const AddProblem = () => {
   const [loadingSpinner, setLoadingSpinner] = useState(false);
 
   const reactQuill = useRef();
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { error, success, problem } = useSelector((state) => state.newProblem);
-
-  const { error: errorTest, success: successTest } = useSelector(
-    (state) => state.newTestCase
-  );
 
   const tags = [
     "Binary Search",
@@ -231,27 +221,62 @@ const AddProblem = () => {
       });
     }
 
-    const problemData =  {
+    console.log(testcases);
+
+    const problemData = {
       name: problemName,
-      sampleTestcases: JSON.stringify(sampleTestcases),
+      sampleTestcases: sampleTestcases,
       problemStatement: problemStatement,
       explanation: explanation,
-      tags: JSON.stringify(currentTags),
+      tags: currentTags,
       timeLimit: time,
       memoryLimit: memory,
-    }
-    //send data to backend
-    dispatch(createProblem(problemData));
+    };
 
-    //send testcases to backend
-    if(success){
-      const problemid = problem._id;
-      const formData2 = new FormData();
-      formData2.append("problemId", problemid);
-      formData2.append("testcases", JSON.stringify(testcases));
-      dispatch(newTestCase(formData2));
-    }
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    //send data to backend
+    axios.post(`/api/v1/admin/problem/new`, problemData, config).then((res) => {
+      const problemid = res.data.id;
+      const testCaseData = {
+        testCase: testcases,
+        problemId: problemid,
+      };
+      axios
+        .post(`/api/v1/admin/testcase/new`, testCaseData, config)
+        .then((res) => {
+          setLoadingSpinner(false);
+          toast.success("Problem Submitted Successfully", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          navigate("/problems");
+        })
+        .catch((err) => {
+          setLoadingSpinner(false);
+          const error = err.response ? err.response.data.message : err.message;
+          toast.error(error, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        });
+    });
   };
+
   const modules = { formula: true };
   modules.toolbar = [
     ["bold", "italic", "underline", "strike"],
@@ -296,20 +321,7 @@ const AddProblem = () => {
   useEffect(() => {
     const enableMathQuillFormulaAuthoring = mathquill4quill({ Quill });
     enableMathQuillFormulaAuthoring(reactQuill.current);
-    if (error) {
-      clearErrors();
-    }
-    if (errorTest) {
-      clearErrors();
-    }
-    if (success) {
-      dispatch({ type: NEW_PROBLEM_RESET });
-    }
-    if (successTest) {
-      navigate("/problems");
-      dispatch({ type: NEW_TESTCASE_RESET });
-    }
-  }, [dispatch, error, success, navigate,errorTest,successTest]);
+  }, []);
 
   return (
     <div className="addproblem-container">
@@ -463,9 +475,7 @@ const AddProblem = () => {
             </Col>
           </Row>
         </Form.Group>
-        <Form.Label className="add-problem-statement">
-            Test Cases
-        </Form.Label>
+        <Form.Label className="add-problem-statement">Test Cases</Form.Label>
         <Form.Group>{children2}</Form.Group>
         <Form.Group>
           <div style={{ display: "flex", gap: "15px" }}>
@@ -495,20 +505,20 @@ const AddProblem = () => {
             </Button>
           </div>
           <Button
-          variant="contained"
-          color="secondary"
-          type="submit"
-          disabled={problemStatement === "" || currentTags.length === 0}
-          style={{ width: "150px", margin: "10px 0px" }}
-        >
-          {loadingSpinner ? (
-            <CircularProgress size={"23px"} style={{ color: "white" }} />
-          ) : (
-            "Submit"
-          )}
-          &nbsp;
-          {loadingSpinner ? null : <FontAwesomeIcon icon={faPaperPlane} />}
-        </Button>
+            variant="contained"
+            color="secondary"
+            type="submit"
+            disabled={problemStatement === "" || currentTags.length === 0}
+            style={{ width: "150px", margin: "10px 0px" }}
+          >
+            {loadingSpinner ? (
+              <CircularProgress size={"23px"} style={{ color: "white" }} />
+            ) : (
+              "Submit"
+            )}
+            &nbsp;
+            {loadingSpinner ? null : <FontAwesomeIcon icon={faPaperPlane} />}
+          </Button>
         </Form.Group>
       </Form>
     </div>
