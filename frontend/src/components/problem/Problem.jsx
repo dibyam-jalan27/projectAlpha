@@ -10,6 +10,8 @@ import { Chip } from "@mui/material";
 import "./Problem.css";
 import CodeEditor from "../Code/CodeEditor";
 import ResultTable from "../ResultTable/ResultTable";
+import Tab from "react-bootstrap/Tab";
+import Tabs from "react-bootstrap/Tabs";
 
 const Problem = () => {
   const { id } = useParams();
@@ -23,7 +25,13 @@ const Problem = () => {
   const [code, setCode] = useState("");
   const [results, setResults] = useState([]);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [runLoading, setRunLoading] = useState(false);
   const [viewResult, setViewResult] = useState(false);
+  const [key, setKey] = useState("input");
+  const [input, setInput] = useState("");
+  const [output, setOutput] = useState("");
+
+  const inputRef = useRef(null);
 
   const languageExtention = {
     C: "c",
@@ -74,6 +82,45 @@ const Problem = () => {
     setCode(newValue);
   };
 
+  const run = (e) => {
+    e.preventDefault();
+    setRunLoading(true);
+    setViewResult(false);
+    const runDetails = {
+      language: languageExtention[language],
+      code: code,
+      input: input,
+    };
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    axios
+      .post(`/api/v1/run`, runDetails, config)
+      .then((res) => {
+        setRunLoading(false);
+        inputRef.current.scrollIntoView({ behavior: "smooth" });
+        setOutput(res.data.output);
+        console.log(res.data);
+        setKey("output");
+      })
+      .catch((err) => {
+        setRunLoading(false);
+        const error = err.response ? err.response.data.message : err.message;
+        toast.error(error, {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      });
+  };
+
   const submit = (e) => {
     setViewResult(true);
     e.preventDefault();
@@ -94,8 +141,9 @@ const Problem = () => {
       .then((res) => {
         setSubmitLoading(false);
         resultRef.current.scrollIntoView({ behavior: "smooth" });
+        console.log(res.data);
 
-        setResults(res.data.result);
+        setResults(res.data);
 
         if (resultRef.current) {
           resultRef.current.scrollIntoView({
@@ -209,10 +257,39 @@ const Problem = () => {
         handleModeChange={handleModeChange}
         onCodeChange={onCodeChange}
         submit={submit}
+        run={run}
+        runLoading={runLoading}
         submitLoading={submitLoading}
       />
-      {viewResult && (
-      <ResultTable results={results} resultRef={resultRef} />)}
+      {viewResult && <ResultTable results={results} resultRef={resultRef} />}
+      {!viewResult && (
+        <div className="problem-input-output" ref={inputRef}>
+        <div className="inputBox">
+          <Tabs
+            id="controlled-tab-example"
+            activeKey={key}
+            onSelect={(k) => setKey(k)}
+            className="mb-3"
+            fill
+          >
+            <Tab eventKey="input" title="Input">
+              <textarea
+                className="input"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
+            </Tab>
+            <Tab eventKey="output" title="Output">
+              <textarea
+                className="input"
+                value={output}
+                readOnly
+              />
+            </Tab>
+          </Tabs>
+        </div>
+      </div>)
+      }
       <br />
       <br />
     </div>

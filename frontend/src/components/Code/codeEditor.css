@@ -30,6 +30,11 @@
     width: 150px;
   }
   
+  .spanClass{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   .code-editor-submit-btn{
     width: 0px;
   }
