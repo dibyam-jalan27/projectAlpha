@@ -5,15 +5,17 @@ const {
   newProblem,
   updateProblem,
   deleteProblem,
+  updateCount,
 } = require("../Controllers/problemController");
 const router = express.Router();
 const { authorizeRoles, isAuthenticatedUser } = require("../middleware/auth");
 
 //routes
 router.route("/problems").get(getProblems);
+router.route("/problem/:id").put(updateCount);
 router
   .route("/admin/problem/:id")
-  .put(isAuthenticatedUser, authorizeRoles("admin"), updateProblem)
+  .put(updateProblem)
   .delete(isAuthenticatedUser, authorizeRoles("admin"), deleteProblem);
 router.route("/problem/:id").get(getSingleProblem);
 router

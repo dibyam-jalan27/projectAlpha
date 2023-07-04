@@ -28,8 +28,12 @@ const userSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
-  problemsSolved: {
-    hard:{
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+  difficulty:{
+    easy:{
       type: Number,
       default: 0,
     },
@@ -37,13 +41,129 @@ const userSchema = new mongoose.Schema({
       type: Number,
       default: 0,
     },
-    easy:{
+    hard:{
+      type: Number,
+      default: 0,
+    }
+  },
+  verdicts:{
+    ACcount: {
       type: Number,
       default: 0,
     },
-    problems:{
-      type: Array,
-      default: [],
+    WAcount: {
+      type: Number,
+      default: 0,
+    },
+    TLEcount: {
+      type: Number,
+      default: 0,
+    },
+    REcount: {
+      type: Number,
+      default: 0,
+    },
+    MLEcount: {
+      type: Number,
+      default: 0,
+    },
+    CEcount: {
+      type: Number,
+      default: 0,
+    },
+    RTEcount: {
+      type: Number,
+      default: 0,
+    },
+    tags:{
+      "Binary Search":{
+        type: Number,
+        default: 0,
+      },
+      "Bitmasks":{
+        type: Number,
+        default: 0,
+      },
+      "Bruteforce":{
+        type: Number,
+        default: 0,
+      },
+      "Combinatorics":{
+        type: Number,
+        default: 0,
+      },
+      "Constructive Algorithms":{
+        type: Number,
+        default: 0,
+      },
+      "Data Structures":{
+        type: Number,
+        default: 0,
+      },
+      "DFS and Similar":{
+        type: Number,
+        default: 0,
+      },
+      "Divide and Conquer":{
+        type: Number,
+        default: 0,
+      },
+      "Dynamic Programming":{
+        type: Number,
+        default: 0,
+      },
+      "DSU":{
+        type: Number,
+        default: 0,
+      },
+      "Flows":{
+        type: Number,
+        default: 0,
+      },
+      "Games":{
+        type: Number,
+        default: 0,
+      },
+      "Graphs":{
+        type: Number,
+        default: 0,
+      },
+      "Greedy":{
+        type: Number,
+        default: 0,
+      },
+      "Implementation":{
+        type: Number,
+        default: 0,
+      },
+      "Math":{
+        type: Number,
+        default: 0,
+      },
+      "Number Theory":{
+        type: Number,
+        default: 0,
+      },
+      "Shortest Paths":{
+        type: Number,
+        default: 0,
+      },
+      "Sortings":{
+        type: Number,
+        default: 0,
+      },
+      "Ternary Search":{
+        type: Number,
+        default: 0,
+      },
+      "Trees":{
+        type: Number,
+        default: 0,
+      },
+      "Two Pointers":{
+        type: Number,
+        default: 0,
+      },
     }
   },
 });

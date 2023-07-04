@@ -6,19 +6,9 @@ import {
   profileReducer,
   userReducer,
 } from "./reducers/userReducer.js";
-import {
-  problemmDetailReducer,
-  problemsReducer,
-  newProblemReducer,
-} from "./reducers/problemReducer.js";
-import { newTestCaseReducer } from "./reducers/testCaseReducer.js";
 
 const reducer = combineReducers({
   user: userReducer,
-  problems: problemsReducer,
-  problemDetails: problemmDetailReducer,
-  newProblem: newProblemReducer,
-  newTestCase: newTestCaseReducer,
   profile: profileReducer,
   forgotPassword: forgotPasswordReducer,
 });

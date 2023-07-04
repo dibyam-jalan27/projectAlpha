@@ -1,3 +1,0 @@
-gcc: error: 63bcff94-279d-4513-805a-2a5f235e9bb3.c: No such file or directory
-gcc: fatal error: no input files
-compilation terminated.

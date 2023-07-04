@@ -12,6 +12,9 @@ import AddProblem from './components/problem/AddProblem';
 import ProblemSet from './components/problem/ProblemSet';
 import NoContent from './components/layout/NoContent/NoContent';
 import NavBar from './components/layout/NavBar/NavBar';
+import UserSubmissions from './components/user/userSubmissions';
+import Dashboard from './components/DashBoard/Dashboard';
+import ResetPassword from './components/user/resetPassword';
 
 function App() {
 
@@ -22,12 +25,17 @@ function App() {
     <Router>
       <NavBar/>
       <Routes>
+        <Route path="/password/reset/:token" element={<ResetPassword/>}/>
         <Route path="/" element={<ProblemSet/>}/>
         <Route path="/admin/createProblem" element={<ProtectedRoute isAdmin={true} />}>
           <Route index element={<AddProblem/>} />
         </Route>
-        <Route path="/password/forgot" element={<ProtectedRoute isAdmin={true} />}>
-          <Route index element={<ForgotPassword/>} />
+        <Route path="/dashboard" element={<ProtectedRoute/>}>
+          <Route index element={<Dashboard/>} />
+        </Route>
+        <Route path="/password/forgot" element={<ForgotPassword/>}/>
+        <Route path="/submissions" element={<ProtectedRoute/>}>
+          <Route index element={<UserSubmissions/>} />
         </Route>
         <Route path="/problems" element={<ProblemSet/>}/>
         <Route path="/login" element={<LoginSignup/>} />

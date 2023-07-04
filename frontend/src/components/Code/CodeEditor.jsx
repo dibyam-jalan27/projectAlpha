@@ -14,14 +14,22 @@ import {
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
 import "./codeEditor.css";
 import * as ace from "ace-builds/src-noconflict/ace";
-import "ace-builds/src-noconflict/mode-c_cpp";
-import "ace-builds/src-noconflict/mode-java";
-import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/theme-eclipse";
 import "ace-builds/src-noconflict/ext-language_tools";
-ace.config.set("basePath", "/ace-builds/src-noconflict");
-
+ace.config.set("basePath", "https://cdn.jsdelivr.net/npm/ace-builds@1.23.1/src-noconflict/");
+ace.config.setModuleUrl(
+  "ace/mode/python",
+  "https://cdn.jsdelivr.net/npm/ace-builds@1.23.1/src-noconflict/mode-python.js"
+)
+ace.config.setModuleUrl(
+  "ace/mode/c_cpp",
+  "https://cdn.jsdelivr.net/npm/ace-builds@1.23.1/src-noconflict/mode-c_cpp.js"
+)
+ace.config.setModuleUrl(
+  "ace/mode/java",
+  "https://cdn.jsdelivr.net/npm/ace-builds@1.23.1/src-noconflict/mode-java.js"
+)
 const CodeEditor = ({
   language,
   handleLanguageSelect,

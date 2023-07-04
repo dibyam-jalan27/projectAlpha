@@ -490,7 +490,7 @@ const AddProblem = () => {
               onClick={addTestcase2}
               type="button"
             >
-              <FontAwesomeIcon icon={faPlus} /> &nbsp; AddcTestcase
+              <FontAwesomeIcon icon={faPlus} /> &nbsp; Add Testcase
             </Button>
             <Button
               variant="contained"

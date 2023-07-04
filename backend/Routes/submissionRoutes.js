@@ -265,6 +265,8 @@ router.route("/submit").post(async (req, res) => {
 
   // Code and input from the request body
   const code = req.body.code;
+  let success = true;
+  let finalVerdict = "AC";
 
   // Create necessary directories if they don't exist
   const dirCodes = path.join(__dirname, "../Codes");
@@ -442,6 +444,7 @@ gcc ${base}.c -o ${base}.out
           verdict = "CE";
           elapsedTime = 0;
           memoryUsage = 0;
+          success = false;
         } else {
           // Copy the execution shell script to the container
           spawnSync(
@@ -466,8 +469,10 @@ gcc ${base}.c -o ${base}.out
           // Check if the execution exceeded the time limit
           if (executeResult.signal === "SIGTERM") {
             verdict = "TLE";
+            success = false;
           } else if (executeResult.stderr) {
             verdict = "RTE";
+            success = false;
           } else {
             // Read the output file from the container
             spawnSync(
@@ -483,6 +488,10 @@ gcc ${base}.c -o ${base}.out
 
             // Send the response with the output, execution time, and memory usage (assuming 0 for now)
             verdict = outputContent.trim() == output ? "AC" : "WA";
+
+            if (verdict === "WA") {
+              success = false;
+            }
 
             time = executeEndTime - executeStartTime;
             const stats = await auxContainer.stats({
@@ -509,9 +518,12 @@ gcc ${base}.c -o ${base}.out
           }
         );
       }
+      if(verdict !== "AC") {
+        finalVerdict = verdict;
+      }
       results.push({ verdict, time, memory });
     }
-    res.json(results);
+    res.json({finalVerdict,success, results});
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Internal server error" });

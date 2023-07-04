@@ -21,9 +21,6 @@ const ResultTable = ({ results, resultRef }) => {
       TLE: "Time Limit Exceeded",
       MLE: "Memory Limit Exceeded",
     };
-
-    console.log(results);
-  
     return (
       <TableContainer
         component={Paper}

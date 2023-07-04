@@ -4,13 +4,18 @@ import { Button, Menu, MenuItem } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../../action/userAction";
 import "./navbar.css";
-import Loader from "../Loader/Loader";
-
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { clearErrors } from "../../../action/userAction";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 export default function NavBar() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { loading, isAuthenticated } = useSelector((state) => state.user);
+  const { loading, isAuthenticated, user, error } = useSelector(
+    (state) => state.user
+  );
   const options = ["", "View Profile", "Logout"];
   const [login, setLogin] = useState(isAuthenticated);
   const handleClickListItem = (event) => {
@@ -20,7 +25,7 @@ export default function NavBar() {
   const handleMenuItemClick = (event, index) => {
     setSelectedIndex(index);
     setAnchorEl(null);
-    if (options[index] === "View Profile") window.location = "/dashboard";
+    if (options[index] === "View Profile") navigate("/dashboard");
     else {
       dispatch(logout());
       setLogin(false);
@@ -33,12 +38,12 @@ export default function NavBar() {
   };
   useEffect(() => {
     setLogin(isAuthenticated);
-    }, [isAuthenticated]);
+    if (error) {
+      dispatch(clearErrors());
+    }
+  }, [isAuthenticated, error, dispatch]);
 
   return (
-    (loading)?(
-        <Loader/>
-    ):(
     <div className="navbar">
       <div className="navbarWrapper">
         <div className="navLeft">
@@ -51,8 +56,13 @@ export default function NavBar() {
             </Link>
             {login ? (
               <>
-                <Link to="/admin/createProblem" className="navbarItem">
-                  Add Problem
+                {user.role === "admin" ? (
+                  <Link to="/admin/createProblem" className="navbarItem">
+                    Add Problem
+                  </Link>
+                ) : null}
+                <Link to="/submissions" className="navbarItem">
+                  Submissions
                 </Link>
               </>
             ) : null}
@@ -66,11 +76,7 @@ export default function NavBar() {
                 aria-haspopup="true"
                 onClick={handleClickListItem}
               >
-                <img
-                  src="https://images.unsplash.com/photo-1513789181297-6f2ec112c0bc?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8aGFja2VyfGVufDB8fDB8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                  alt="avatar"
-                  className="navbarAvatar"
-                />
+                <AccountCircleIcon style={{ fontSize: 40, color: "white" }} />
               </Button>
               <Menu
                 id="simple-menu"
@@ -107,6 +113,5 @@ export default function NavBar() {
         </div>
       </div>
     </div>
-  )
-  )
+  );
 }

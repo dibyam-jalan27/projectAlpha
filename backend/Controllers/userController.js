@@ -79,7 +79,9 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
   await user.save({ validateBeforeSave: false });
 
   // Create reset password url
-  const resetUrl = `http://localhost:3000/api/v1/password/reset/${resetToken}`;
+  const resetUrl = `${req.protocol}://${req.get(
+    "host"
+    )}/password/reset/${resetToken}`;
 
   const message = `Your password reset token is as follow:\n\n${resetUrl}\n\nIf you have not requested this email, then ignore it.`;
 
@@ -169,6 +171,63 @@ exports.updateProfile = catchAsyncErrors(async (req, res, next) => {
     runValidators: true,
     useFindAndModify: false,
   });
+  res.status(200).json({
+    success: true,
+  });
+});
+
+//Update Verdict => /api/v1/me/updateVerdict
+exports.updateVerdict = catchAsyncErrors(async (req, res, next) => {
+  const {verdict, tags,  difficulty} = req.body;
+
+  const user = await User.findById(req.user.id);
+
+  switch(verdict){
+    case "AC":
+      user.verdicts.ACcount += 1;
+      break;
+    case "WA":
+      user.verdicts.WAcount += 1;
+      break;
+    case "TLE":
+      user.verdicts.TLEcount += 1;
+      break;
+    case "MLE":
+      user.verdicts.MLEcount += 1;
+      break;
+    case "RE":
+      user.verdicts.REcount += 1;
+      break;
+    case "CE":
+      user.verdicts.CEcount += 1;
+      break;
+    default:
+      user.verdicts.RTEcount += 1;
+      break;
+  }
+
+  switch(difficulty){
+    case "Easy":
+      user.difficulty.easy += 1;
+      break;
+    case "Medium":
+      user.difficulty.medium += 1;
+      break;
+    default:
+      user.difficulty.hard += 1;
+      break;
+  }
+
+  tags.forEach(tag => {
+    if(user.verdicts.tags[tag] === undefined){
+      user.verdicts.tags[tag] = 1;
+    } else {
+      user.verdicts.tags[tag] += 1;
+    }
+  });
+
+  await user.save();
+
   res.status(200).json({
     success: true,
   });

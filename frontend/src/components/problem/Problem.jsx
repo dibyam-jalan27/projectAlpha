@@ -12,8 +12,12 @@ import CodeEditor from "../Code/CodeEditor";
 import ResultTable from "../ResultTable/ResultTable";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import { useSelector, useDispatch } from "react-redux";
+import { clearErrors } from "../../action/userAction";
+import { getDifficulty } from "../../utils.js";
 
 const Problem = () => {
+  const dispatch = useDispatch();
   const { id } = useParams();
   const navigate = useNavigate();
   const resultRef = useRef(null);
@@ -30,6 +34,10 @@ const Problem = () => {
   const [key, setKey] = useState("input");
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
+  const [tags, setTags] = useState([]);
+  const [difficulty, setDifficulty] = useState("");
+
+  const { user, error } = useSelector((state) => state.user);
 
   const inputRef = useRef(null);
 
@@ -41,13 +49,18 @@ const Problem = () => {
   };
 
   useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch(clearErrors());
+    }
     axios
       .get(`/api/v1/problem/${id}`)
       .then((res) => {
-        console.log(res.data);
         if (!res.data || res.data.length === 0) setProblemDoesNotExists(true);
         else {
           setProblem(res.data.problem);
+          setTags(res.data.problem.tags);
+          setDifficulty(getDifficulty(res.data.problem));
         }
         setLoading(false);
       })
@@ -103,7 +116,6 @@ const Problem = () => {
         setRunLoading(false);
         inputRef.current.scrollIntoView({ behavior: "smooth" });
         setOutput(res.data.output);
-        console.log(res.data);
         setKey("output");
       })
       .catch((err) => {
@@ -141,9 +153,74 @@ const Problem = () => {
       .then((res) => {
         setSubmitLoading(false);
         resultRef.current.scrollIntoView({ behavior: "smooth" });
-        console.log(res.data);
 
-        setResults(res.data);
+        let success = res.data.success;
+
+        let count = {
+          success: success,
+        };
+
+        axios.put(`/api/v1/problem/${id}`, count, config).catch((err) => {
+          const error = err.response ? err.response.data.message : err.message;
+          toast.error(error, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        });
+
+        setResults(res.data.results);
+
+        const submi = {
+          code,
+          language,
+          name: problem.name,
+          result: res.data.results[0],
+        };
+        axios
+          .post(`/api/v1/submission/user/${user._id}`, submi, config)
+          .then((res) => {
+            console.log(res.data);
+          })
+          .catch((err) => {
+
+            const error = err.response
+              ? err.response.data.message
+              : err.message;
+            toast.error(error, {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          });
+
+        const userData = {
+          user,
+          difficulty:(success?difficulty:""),
+          verdict: res.data.finalVerdict,
+          tags : (success?tags:[]),
+        };
+
+        axios.put(`/api/v1/updateVerdict`, userData, config).catch((err) => {
+          const error = err.response ? err.response.data.message : err.message;
+          toast.error(error, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        });
 
         if (resultRef.current) {
           resultRef.current.scrollIntoView({
@@ -264,32 +341,28 @@ const Problem = () => {
       {viewResult && <ResultTable results={results} resultRef={resultRef} />}
       {!viewResult && (
         <div className="problem-input-output" ref={inputRef}>
-        <div className="inputBox">
-          <Tabs
-            id="controlled-tab-example"
-            activeKey={key}
-            onSelect={(k) => setKey(k)}
-            className="mb-3"
-            fill
-          >
-            <Tab eventKey="input" title="Input">
-              <textarea
-                className="input"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-              />
-            </Tab>
-            <Tab eventKey="output" title="Output">
-              <textarea
-                className="input"
-                value={output}
-                readOnly
-              />
-            </Tab>
-          </Tabs>
+          <div className="inputBox">
+            <Tabs
+              id="controlled-tab-example"
+              activeKey={key}
+              onSelect={(k) => setKey(k)}
+              className="mb-3"
+              fill
+            >
+              <Tab eventKey="input" title="Input">
+                <textarea
+                  className="input"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                />
+              </Tab>
+              <Tab eventKey="output" title="Output">
+                <textarea className="input" value={output} readOnly />
+              </Tab>
+            </Tabs>
+          </div>
         </div>
-      </div>)
-      }
+      )}
       <br />
       <br />
     </div>
