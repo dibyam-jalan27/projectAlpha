@@ -6,9 +6,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 //CORS
-app.use(cors({
-    origin: 'http://127.0.0.1:5500',
-}));
+app.use(cors());
 
 app.use(express.json());
 app.use(cookieParser());

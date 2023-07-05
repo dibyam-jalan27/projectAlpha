@@ -80,7 +80,7 @@ const Problem = () => {
       });
 
     return () => {};
-  }, [id]);
+  }, [id,dispatch,error]);
 
   const handleLanguageSelect = (e) => {
     e.preventDefault();
