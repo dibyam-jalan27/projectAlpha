@@ -4,6 +4,7 @@ const errrMiddleware = require('./middleware/error');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 
 //CORS
 app.use(cors());
