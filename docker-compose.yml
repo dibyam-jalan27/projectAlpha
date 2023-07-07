@@ -1,17 +1,14 @@
 version: '3'
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: frontend-image
     ports:
       - 3000:3000
     networks:
       - my_network
+
   backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+    image: backend-image
     ports:
       - 4000:4000
     networks:
@@ -19,4 +16,3 @@ services:
 
 networks:
   my_network:
-  

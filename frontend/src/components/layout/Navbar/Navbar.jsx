@@ -4,7 +4,6 @@ import { Button, Menu, MenuItem } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../../action/userAction";
 import "./navbar.css";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { clearErrors } from "../../../action/userAction";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -13,7 +12,7 @@ export default function NavBar() {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const { loading, isAuthenticated, user, error } = useSelector(
+  const { isAuthenticated, user, error } = useSelector(
     (state) => state.user
   );
   const options = ["", "View Profile", "Logout"];
@@ -56,7 +55,7 @@ export default function NavBar() {
             </Link>
             {login ? (
               <>
-                {user.role === "admin" ? (
+                {user != null && user.role === "admin" ? (
                   <Link to="/admin/createProblem" className="navbarItem">
                     Add Problem
                   </Link>
